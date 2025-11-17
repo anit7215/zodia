@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useFortuneStore } from '../stores/fortuneStore';
 
-const API_URL = 'http://localhost:5000/api/fortunes';
+const API_URL =  import.meta.env.VITE_API_URL||'http://localhost:5000/api/fortunes';
 
 export const useFortunes = () => {
   const { fortunes, setFortunes, setIsLoading } = useFortuneStore();
