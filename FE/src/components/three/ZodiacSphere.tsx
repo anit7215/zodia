@@ -1,11 +1,33 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sphere, Text, Billboard } from '@react-three/drei';
-import { Mesh } from 'three';
+import { Mesh, Group } from 'three';
 import { ZodiacSphereProps } from '../../types/type';
 import { getRankColor } from '../../utils/zodiac';
 import { Model3D } from './Model3D';
 import { useFortuneStore } from '../../stores/fortuneStore';
+
+const createStarParticles = (sphereSize: number) => {
+  const particles = [];
+  const particleCount = 40;
+
+  for (let i = 0; i < particleCount; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const radius = Math.pow(Math.random(), 1/3) * sphereSize * 0.75;
+
+    const x = radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.sin(phi) * Math.sin(theta);
+    const z = radius * Math.cos(phi);
+
+    const speed = 0.5 + Math.random() * 0.5;
+    const offset = Math.random() * Math.PI * 2;
+
+    particles.push({ x, y, z, id: i, speed, offset });
+  }
+
+  return particles;
+};
 
 export const ZodiacSphere: React.FC<ZodiacSphereProps> = ({
   position,
@@ -19,7 +41,8 @@ export const ZodiacSphere: React.FC<ZodiacSphereProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const meshRef = useRef<Mesh>(null!);
-  const innerGroupRef = useRef<any>(null!);
+  const innerGroupRef = useRef<Group>(null!);
+  const particleGroupRef = useRef<Group>(null!);
 
   useFrame((state, delta) => {
     if (meshRef.current) {
@@ -47,29 +70,7 @@ export const ZodiacSphere: React.FC<ZodiacSphereProps> = ({
   const sphereSize = baseSize * scale;
   const textOffset = sphereSize + (isMySign ? 1 : 0.6);
 
-  const starParticles = useMemo(() => {
-    const particles = [];
-    const particleCount = 40;
-
-    for (let i = 0; i < particleCount; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      const radius = Math.pow(Math.random(), 1/3) * sphereSize * 0.75;
-
-      const x = radius * Math.sin(phi) * Math.cos(theta);
-      const y = radius * Math.sin(phi) * Math.sin(theta);
-      const z = radius * Math.cos(phi);
-
-      const speed = 0.5 + Math.random() * 0.5;
-      const offset = Math.random() * Math.PI * 2;
-
-      particles.push({ x, y, z, id: i, speed, offset });
-    }
-
-    return particles;
-  }, [sphereSize]);
-
-  const particleGroupRef = useRef<any>(null!);
+  const [starParticles] = useState(() => createStarParticles(sphereSize));
 
   return (
     <group position={position}>

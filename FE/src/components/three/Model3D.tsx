@@ -45,7 +45,7 @@ class ModelErrorBoundary extends React.Component<
   }
 }
 
-export const Model3D: React.FC<Model3DProps> = ({ rank, isMySign, modelPath }) => {
+export const Model3D: React.FC<Model3DProps> = ({ modelPath }) => {
   if (modelPath) {
     return (
       <ModelErrorBoundary fallback={<DefaultSphere />}>

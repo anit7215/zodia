@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Stars, Environment as DreiEnvironment } from '@react-three/drei';
 import * as THREE from 'three';
@@ -27,16 +27,20 @@ export const Environment: React.FC = () => {
   );
 };
 
-export const FloatingParticles: React.FC = () => {
-  const particlesRef = useRef<THREE.Points>(null!);
-  const particleCount = 1000;
-  const positions = new Float32Array(particleCount * 3);
-
-  for (let i = 0; i < particleCount; i++) {
+const createParticlePositions = (count: number) => {
+  const positions = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
     positions[i * 3] = (Math.random() - 0.5) * 50;
     positions[i * 3 + 1] = (Math.random() - 0.5) * 50;
     positions[i * 3 + 2] = (Math.random() - 0.5) * 50;
   }
+  return positions;
+};
+
+export const FloatingParticles: React.FC = () => {
+  const particlesRef = useRef<THREE.Points>(null!);
+  const particleCount = 1000;
+  const [positions] = useState(() => createParticlePositions(particleCount));
 
   useFrame((state) => {
     if (particlesRef.current) {
@@ -49,9 +53,7 @@ export const FloatingParticles: React.FC = () => {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={particleCount}
-          array={positions}
-          itemSize={3}
+          args={[positions, 3]}
         />
       </bufferGeometry>
       <pointsMaterial
