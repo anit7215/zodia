@@ -1,0 +1,15 @@
+{
+  "name": "zodia-websocket-server",
+  "version": "1.0.0",
+  "description": "WebSocket server for Zodia chat",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["websocket", "chat", "zodiac"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
